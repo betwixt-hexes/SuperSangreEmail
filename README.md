@@ -23,8 +23,15 @@ Usage
 
 **COMING SOON(ish):**
 
-Next push should aim to haz:
+*Next push should aim to haz:*
 
 - MOAR Readability (PRETTY COLORS)
 - Check for /etc/userdomains
 - *At LEAST* the e-mail option with, Iunno, one check?  Two maybe?
+
+*And then I'm gonna...:*
+
+- Probably start trying to switch to IPC::Run instead of that gigantor and likely unneccesary run() sub I ganked from SSP.
+- Get port checks knocked out -- those look easy.
+- Write a better dig statement for that resolve check.  That probably wasn't the best implimentation of that idea >.>.
+- Cry forever.
