@@ -7,6 +7,7 @@ Usage
 --------------
 
 **# wget https://raw.githubusercontent.com/batsyphus/SuperSangreEmail/master/sse.pl; chmod +x sse.pl**
+
 **# ./sse.pl [OPTIONS]**
 
 **Current Checks Impliemented:**
