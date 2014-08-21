@@ -14,9 +14,13 @@ Usage
 
 - Print current exim queue.
 - Check for custom /etc/mailips and /etc/mailhelo.
+- Check if port 26 is enabled.
+
 
 **[With --domain option]**
 
+- Check if domain exists on the server.
+- Check if the user account is suspended.
 - Check if domain is identical to hostname.
 - Check if domain is in remote or local domains.
 - Check if domain resolves locally to server.
@@ -25,13 +29,13 @@ Usage
 
 *Next push should aim to haz:*
 
-- MOAR Readability (PRETTY COLORS)
-- Check for /etc/userdomains
-- *At LEAST* the e-mail option with, Iunno, one check?  Two maybe?
+- *At LEAST* the e-mail option built in with, Iunno, one check?  Two maybe?
+- RBL integration.
+- IPTables chex.
 
 *And then I'm gonna...:*
 
+- IMPLIMENT COLORS.
 - Probably start trying to switch to IPC::Run instead of that gigantor and likely unneccesary run() sub I ganked from SSP.
-- Get port checks knocked out -- those look easy.
 - Write a better dig statement for that resolve check.  That probably wasn't the best implimentation of that idea >.>.
-- Cry forever.
+- Cry forever more.
