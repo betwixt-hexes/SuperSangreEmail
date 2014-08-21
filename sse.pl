@@ -24,6 +24,7 @@ get_local_ipaddrs();
 ## GENERAL GUTS ## -- will run regardless of options passed.
 
 print "There are currently $queue_cnt messages in the Exim queue.\n";
+port_26();
 
 custom_etc_mail();
 
@@ -31,6 +32,7 @@ custom_etc_mail();
 
 if ($domain){ ## --domain
 hostname_check();
+domain_exist();
 check_local_or_remote(); 
 domain_resolv();
 }
@@ -78,49 +80,73 @@ sub get_local_ipaddrs { ## Ripped from SSP as well.  Likely less gratuitous, but
 ### GENERAL CHEX ###
 
 sub custom_etc_mail{
-	if (-s '/etc/mailips') {
-	print "/etc/mailips is NOT empty.\n";
-	}
-	if (-s '/etc/mailhelo') {
-	print "/etc/mailhelo is NOT empty.\n";
-	}
+    if (-s '/etc/mailips') {
+    print "/etc/mailips is NOT empty.\n";
+    }
+    if (-s '/etc/mailhelo') {
+    print "/etc/mailhelo is NOT empty.\n";
+    }
+}
+sub port_26 {  ## You'll need to remove the double /n as more checks are written.
+if (`netstat -an | grep :26`) {
+    print "Port 26 is ENABLED.\n\n";
+    return;
+}
+else{
+    print "Port 26 is DISABLED.\n\n";
+}
 }
 ### DOMAIN CHEX ###
 
 sub hostname_check{
 if ($hostname eq $domain){
-	print "Your hostname $hostname appears to be the same as $domain.  Was this intentional?\n";
-	}}
+    print "Your hostname $hostname appears to be the same as $domain.  Was this intentional?\n";
+    }}
+
+sub domain_exist {
+open( USERDOMAINS, "/etc/userdomains" );
+while (<USERDOMAINS>) {
+    if (/^$domain: (\S+)/i) {
+        my $user = $1;
+        print "The domain $domain is owned by $user.\n";
+        my $suspchk = "/var/cpanel/suspended/$user";
+            if (-e $suspchk) {
+                print "The user $user is SUSPENDED.\n";
+            }
+        return;
+    }}
+        print "The domain $domain DOES NOT exist on this server.\n";
+close (USERDOMAINS);
+}
 
 sub check_local_or_remote {
 
 open my $loc_domain, '<', '/etc/localdomains';
 while (<$loc_domain>) {
-	if (/^${domain}$/){
-		print "$domain is in LOCALDOMAINS.\n";		
-		}}
-	close $loc_domain;
+    if (/^${domain}$/){
+        print "$domain is in LOCALDOMAINS.\n";      
+        }}
+    close $loc_domain;
 
 open my $remote_domain, '<', '/etc/remotedomains';
 while (<$remote_domain>) {
-	if (/^${domain}$/){
-		print "$domain is in REMOTEDOMAINS.\n";
-		last;
-		}}
-	close $remote_domain;
+    if (/^${domain}$/){
+        print "$domain is in REMOTEDOMAINS.\n";
+        last;
+        }}
+    close $remote_domain;
 }
 
 sub domain_resolv {
 chomp($domain_ip = run('dig',$domain,'@8.8.4.4','+short'));
 foreach (@local_ipaddrs_list) {
-	if  (/^${domain_ip}$/) {
-		print "The domain $domain resolves to IP: $domain_ip.\n";
-		return;
-	}
-	else {
-		print "The domain $domain does not resolve to this server.  It resolves to $domain_ip.","\n";
-		return;	
+    if  (/^${domain_ip}$/) {
+        print "The domain $domain resolves to IP: $domain_ip.\n";
+        return;
+    }
+    else {
+        print "The domain $domain DOES NOT resolve to this server.\n";
+        return; 
 }
 
-}
-}
+}}
