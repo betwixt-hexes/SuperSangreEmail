@@ -6,6 +6,7 @@ use Getopt::Long;
 use Term::ANSIColor qw(:constants);
 use POSIX;
 use File::Find;
+use Data::Dump 'dump';
 
 $ENV{'PATH'} = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin';
 
@@ -139,8 +140,9 @@ while (<$remote_domain>) {
 
 sub domain_resolv {
 chomp($domain_ip = run('dig',$domain,'@8.8.4.4','+short'));
-foreach (@local_ipaddrs_list) {
-    if  (/^${domain_ip}$/) {
+#foreach (@local_ipaddrs_list) {
+#    if  (/^${domain_ip}$/) {
+if (grep {$_ eq $domain_ip} @local_ipaddrs_list) {
         print "The domain $domain resolves to IP: $domain_ip.\n";
         return;
     }
@@ -149,4 +151,4 @@ foreach (@local_ipaddrs_list) {
         return; 
 }
 
-}}
+}
