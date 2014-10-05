@@ -15,7 +15,8 @@ Usage
 - Print current exim queue.
 - Check for custom /etc/mailips and /etc/mailhelo.
 - Check if port 26 is enabled.
-
+- Check if mail IPs are blacklisted
+- Show reverse DNS for mail IPs
 
 **[With --domain option]**
 
@@ -30,7 +31,6 @@ Usage
 *Next push should aim to haz:*
 
 - *At LEAST* the e-mail option built in with, Iunno, one check?  Two maybe?
-- RBL integration.
 - IPTables chex.
 
 *And then I'm gonna...:*
