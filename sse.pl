@@ -6,7 +6,6 @@ use Getopt::Long;
 use Term::ANSIColor qw(:constants);
 use POSIX;
 use File::Find;
-use Data::Dump 'dump';
 
 $ENV{'PATH'} = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin';
 
@@ -28,6 +27,8 @@ print "There are currently $queue_cnt messages in the Exim queue.\n";
 port_26();
 
 custom_etc_mail();
+
+check_blacklists();
 
 ## OPTIONED GUTS ##
 
@@ -151,4 +152,63 @@ if (grep {$_ eq $domain_ip} @local_ipaddrs_list) {
         return; 
 }
 
+
+sub check_blacklists {
+# Way more lists out there, but I'll add them later.
+my %list = (
+    'sbl-xbl.spamhaus.org'        => 'http://www.spamhaus.org',
+    'pbl.spamhaus.org'            => 'http://www.spamhaus.org',
+    'bl.spamcop.net'              => 'http://www.spamcop.net',
+    'dsn.rfc-ignorant.org'        => 'http://www.rfc-ignorant.org',
+    'postmaster.rfc-ignorant.org' => 'http://www.rfc.ignorant.org',
+    'abuse.rfc-ignorant.org'      => 'http://www.rfc.ignorant.org',
+    'whois.rfc-ignorant.org'      => 'http://www.rfc.ignorant.org',
+    'ipwhois.rfc-ignorant.org'    => 'http://www.rfc.ignorant.org',
+    'bogusmx.rfc-ignorant.org'    => 'http://www.rfc.ignorant.org',
+    'dnsbl.sorbs.net'             => 'http://www.sorbs.net',
+    'badconf.rhsbl.sorbs.net'     => 'http://www.sorbs.net',
+    'nomail.rhsbl.sorbs.net'      => 'http://www.sorbs.net',
+    'cbl.abuseat.org'             => 'http://www.abuseat.org/support',
+    'relays.visi.com'             => 'http://www.visi.com',
+    'list.dsbl.org'               => 'http://www.dsbl.org',
+    'opm.blitzed.org'             => 'http://www.blitzed.org',
+    'zen.spamhaus.org'            => 'http://www.spamhaus.org',
+);
+
+# Grab the mail addresses
+
+my @files = qw(/var/cpanel/mainip /etc/mailips);
+
+my @ips = '';
+
+foreach my $files (@files) {
+open FILE, "$files";
+while ( $lines = <FILE> ) {
+if ($lines =~ m/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/) {
+$lines = $1;
+chomp $lines;
+push @ips, $lines;
+}
+}
+close FILE;
+}
+
+shift @ips;
+
+
+foreach my $line (keys %list) {
+	foreach my $ip (@ips) {
+    my $host = "$ip.$line";
+    my $ret = qx/dig +short $host/;
+
+    my $status = $ret ? "is listed" : "not listed";
+    if ( $status eq "not listed" ) {
+    return;
+}
+    else {
+    print "$ip is listed on $line\n";
+}
+}
+}
+}
 }
