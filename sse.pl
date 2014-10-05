@@ -29,7 +29,7 @@ port_26();
 custom_etc_mail();
 
 check_blacklists();
-
+rdns_lookup();
 ## OPTIONED GUTS ##
 
 if ($domain){ ## --domain
@@ -98,6 +98,24 @@ else{
     print "Port 26 is DISABLED.\n\n";
 }
 }
+
+
+sub rdns_lookup {
+my @files = qw(/var/cpanel/mainip /etc/mailips);
+my @ips = '';
+
+foreach my $files (@files) {
+open FILE, "$files";
+while ( $lines = <FILE> ) {
+if ($lines =~ m/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/) {
+$lines = $1;
+my $check = qx/host $lines/;
+print "$lines has RDNS entry:   $check";
+}
+}
+}
+}
+
 ### DOMAIN CHEX ###
 
 sub hostname_check{
