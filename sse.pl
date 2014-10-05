@@ -14,7 +14,7 @@ $ENV{'PATH'} = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin';
 my %opts;
 my $domain = 1;
 
-GetOptions(\%opts, 'domain:s'=> \$domain);
+GetOptions(\%opts, 'domain:s'=> \$domain) or die ("Please see --help\n");
 
 ## GLOBALS ##
 
