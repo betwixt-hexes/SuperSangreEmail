@@ -11,8 +11,10 @@ $ENV{'PATH'} = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin';
 
 ## OPTIONS ##
 
-my $domain = '';
-GetOptions ('domain=s' => \$domain);
+my %opts;
+my $domain = 1;
+
+GetOptions(\%opts, 'domain:s'=> \$domain);
 
 ## GLOBALS ##
 
@@ -21,22 +23,25 @@ chomp (my $queue_cnt = `exim -bpc`);
 my @local_ipaddrs_list = get_local_ipaddrs();
 get_local_ipaddrs();
 
-## GENERAL GUTS ## -- will run regardless of options passed.
+## GUTS ##
 
-print "There are currently $queue_cnt messages in the Exim queue.\n";
-port_26();
+if (! $domain) { ## -- kill the script if no arguement or bad option is passed.
+    die("Invalid usage. Please see --help\n");
+}
 
-custom_etc_mail();
-
-check_blacklists();
-rdns_lookup();
-## OPTIONED GUTS ##
-
-if ($domain){ ## --domain
+elsif ($domain ne 1){ ## --domain{
 hostname_check();
 domain_exist();
 check_local_or_remote(); 
 domain_resolv();
+}
+
+else { ## No options passed.    
+print "There are currently $queue_cnt messages in the Exim queue.\n";
+port_26();
+custom_etc_mail();
+check_blacklists();
+rdns_lookup();
 }
 
 ##INFORMATIONAL CHEX##
@@ -215,7 +220,7 @@ shift @ips;
 
 
 foreach my $line (keys %list) {
-	foreach my $ip (@ips) {
+    foreach my $ip (@ips) {
     my $host = "$ip.$line";
     my $ret = qx/dig +short $host/;
 
