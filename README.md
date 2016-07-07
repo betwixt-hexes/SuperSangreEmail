@@ -1,14 +1,10 @@
 SuperSangreEmail
 ================
 
+**This has been cloned to a new official home at: https://github.com/cPanelTechs/SSE**
+
 For all^h^hsome of your super cPanel w/ Exim server needs.
 
-Usage
---------------
-
-**# wget https://raw.githubusercontent.com/batsyphus/SuperSangreEmail/master/sse.pl; chmod +x sse.pl**
-
-**# ./sse.pl [OPTIONS]**
 
 **Current Checks Impliemented:**
 
